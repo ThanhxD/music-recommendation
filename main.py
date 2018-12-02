@@ -7,7 +7,7 @@ from sklearn.neighbors import NearestNeighbors
 # display results to 3 decimal points, not in scientific notation
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-user_data = pd.read_table('./lastfm-dataset-360K/usersha1-artmbid-artname-plays_1.tsv',
+user_data = pd.read_table('./lastfm-dataset-360K/usersha1-artmbid-artname-plays.tsv',
                           header = None, nrows = 2e7,
                           names = ['users', 'musicbrainz-artist-id', 'artist-name', 'plays'],
                           usecols = ['users', 'artist-name', 'plays'])
