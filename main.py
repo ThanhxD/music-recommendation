@@ -7,7 +7,7 @@ from sklearn.neighbors import NearestNeighbors
 # display results to 3 decimal points, not in scientific notation
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-user_data = pd.read_table('./lastfm-dataset-360K/usersha1-artmbid-artname-plays.tsv',
+user_data = pd.read_table('./lastfm-dataset-360K/usersha1-artmbid-artname-plays_1.tsv',
                           header = None, nrows = 2e7,
                           names = ['users', 'musicbrainz-artist-id', 'artist-name', 'plays'],
                           usecols = ['users', 'artist-name', 'plays'])
@@ -80,21 +80,26 @@ save_sparse_csr('./lastfm_sparse_artist_matrix.npz', wide_artist_data_sparse)
 
     # # model
     # # fitting the model
-def recommend():
+def recommend(artist):
     model_knn = NearestNeighbors(metric = 'cosine', algorithm = 'brute')
     model_knn.fit(wide_artist_data_sparse)
 
     # # making the recommendation
-    query_index = np.random.choice(wide_artist_data.shape[0])
-    # print query_index
-    distances, indices = model_knn.kneighbors(wide_artist_data.iloc[query_index, :].values.reshape(1, -1), n_neighbors = 6)
-
+    # query_index = np.random.choice(wide_artist_data.shape[0])
+    
     results = []
-    for i in range(0, len(distances.flatten())):
-        # if i == 0:
-        #     print('Recommendations for {0}:\n'.format(wide_artist_data.index[query_index]))
-        # else:
-        #     print('{0}: {1}, with distance of {2}:'.format(i, wide_artist_data.index[indices.flatten()[i]], distances.flatten()[i]))
-        if i > 0:
-            results.append(wide_artist_data.index[indices.flatten()[i]])
+
+    if artist != None:
+        query_index = int(artist)
+        print('Recommendations for {0}:\n'.format(wide_artist_data.index[query_index]))
+        distances, indices = model_knn.kneighbors(wide_artist_data.iloc[query_index, :].values.reshape(1, -1), n_neighbors = 6)
+
+        for i in range(0, len(distances.flatten())):
+            # if i == 0:
+            #     print('Recommendations for {0}:\n'.format(wide_artist_data.index[query_index]))
+            # else:
+            #     print('{0}: {1}, with distance of {2}:'.format(i, wide_artist_data.index[indices.flatten()[i]], distances.flatten()[i]))
+            if i > 0:
+                results.append(wide_artist_data.index[indices.flatten()[i]])
+    print(results)
     return results
